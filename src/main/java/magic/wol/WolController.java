@@ -1,7 +1,9 @@
 package magic.wol;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -17,20 +19,18 @@ public class WolController {
 		
 		try {
 			
-			System.out.println(new File("addresses.txt").toPath());
-			List<String> lines = Files.readAllLines(new File("addresses.txt").toPath());
-			for(String line : lines)
+			System.out.println(new File("command.txt").toPath());
+			List<String> commands = Files.readAllLines(new File("command.txt").toPath());
+			for(String command : commands)
 			{
-				String[] split = line.split(" ");
-				
-				if(split.length == 2)
+				Process p = Runtime.getRuntime().exec(command);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				String output = null;
+				while((output = reader.readLine()) != null)
 				{
-					String subnet = split[0];
-					String macAddress = split[1];
-					System.out.println("Subnet used " + subnet);
-					System.out.println("Mac Address: " + macAddress);
-					Runtime.getRuntime().exec("etherwake -b " + subnet + " " + macAddress);
+					System.out.println(output);
 				}
+				reader.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
